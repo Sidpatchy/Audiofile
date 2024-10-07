@@ -7,6 +7,7 @@ import com.sidpatchy.audiofile.FSK.Encode.EncoderTools;
 import com.sidpatchy.audiofile.FSK.Encode.ModifiedFSK;
 
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
 
@@ -16,24 +17,42 @@ public class Main {
     private static EncoderTools encoderTools = new EncoderTools();
 
     public static void main(String[] args) {
-        //encoderTest();
-        decoderTest();
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Do you want to run the encoder (e) or decoder (d)? ");
+        String choice = scanner.nextLine();
+
+        if (choice.equalsIgnoreCase("e")) {
+            encoderTest(scanner);
+        } else if (choice.equalsIgnoreCase("d")) {
+            decoderTest(scanner);
+        } else {
+            System.out.println("Invalid choice. Please enter 'e' for encoder or 'd' for decoder.");
+        }
     }
 
-    private static void encoderTest() {
-        String inputFilePath = "/home/phoenix/Downloads/menards.ico"; // Replace with the path to your input file
-        String outputAudioFilePath = "/home/phoenix/Downloads/menards.wav"; // Replace with your desired output audio file path
+    private static void encoderTest(Scanner scanner) {
+        System.out.print("Enter the path to your input file: ");
+        String inputFilePath = scanner.nextLine();
+
+        System.out.print("Enter the desired output audio file path: ");
+        String outputAudioFilePath = scanner.nextLine();
 
         byte[] inputBytes = fileUtils.getFileAsBytes(inputFilePath);
 
         List<Integer> frequencies = fsk.byteListToFrequencyList(inputBytes, 1);
 
         encoderTools.saveFrequenciesToAudioFile(frequencies, outputAudioFilePath, 0.5, 1);
+
+        System.out.println("Encoding complete. Output saved to: " + outputAudioFilePath);
     }
 
-    private static void decoderTest() {
-        String encodedAudioFilePath = "/home/phoenix/Downloads/menards.wav"; // Path to the encoded audio file
-        String outputFilePath = "/home/phoenix/Downloads/menards-decodedreal.ico"; // Path to the decoded output file
+    private static void decoderTest(Scanner scanner) {
+        System.out.print("Enter the path to the encoded audio file: ");
+        String encodedAudioFilePath = scanner.nextLine();
+
+        System.out.print("Enter the desired output file path: ");
+        String outputFilePath = scanner.nextLine();
 
         // Extract frequencies from the audio file
         DecoderTools decoder = new DecoderTools();
@@ -48,5 +67,7 @@ public class Main {
 
         // Save the decoded byte data to a file
         fileUtils.writeBytesToFile(outputFilePath, decodedBytes);
+
+        System.out.println("Decoding complete. Output saved to: " + outputFilePath);
     }
 }
